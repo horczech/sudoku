@@ -22,12 +22,12 @@ class BasicGridFinder(GridFinder):
         # do the perspective transformation
         source_pts = np.asarray([top_left_pt, top_right_pt, bottom_right_pt, bottom_left_pt], dtype=np.float32)
         destination_pts = np.asarray([[0, 0],
-                                      [self.config.GridFinder.output_grid_size, 0],
-                                      [self.config.GridFinder.output_grid_size, self.config.GridFinder.output_grid_size],
-                                      [0, self.config.GridFinder.output_grid_size]], dtype=np.float32)
+                                      [self.config.output_grid_size, 0],
+                                      [self.config.output_grid_size, self.config.output_grid_size],
+                                      [0, self.config.output_grid_size]], dtype=np.float32)
 
         M = cv2.getPerspectiveTransform(source_pts, destination_pts)
-        self._straightened_grid = cv2.warpPerspective(self.original_image, M, (self.config.GridFinder.output_grid_size, self.config.GridFinder.output_grid_size))
+        self._straightened_grid = cv2.warpPerspective(self.original_image, M, (self.config.output_grid_size, self.config.output_grid_size))
 
         return self._straightened_grid
 

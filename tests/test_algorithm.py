@@ -13,7 +13,7 @@ TEST_IMG_PATH = r'tests/test_images'
 
 @pytest.mark.parametrize("sudoku_img_path", glob.glob(TEST_IMG_PATH + '/*.jpg'))
 def test_preprocessing(sudoku_img_path):
-    from configs import default_config as config
+    from configs.default_config import preprocessing as config
 
     sudoku_image = load_image(sudoku_img_path, cv2.IMREAD_GRAYSCALE)
 
@@ -37,21 +37,21 @@ def test_preprocessing(sudoku_img_path):
     plt.imshow(preprocessor._opening_closing, cmap='gray')
     plt.title('opening and closing image')
 
-
     plt.show()
 
 
 @pytest.mark.parametrize("sudoku_img_path", glob.glob(TEST_IMG_PATH + '/*.jpg'))
 def test_grid_finder(sudoku_img_path):
-    from configs import default_config as config
+    from configs.default_config import GridFinder as grid_finder_config
+    from configs.default_config import preprocessing as preprocessing_config
 
     sudoku_image = load_image(sudoku_img_path, cv2.IMREAD_GRAYSCALE)
 
-    preprocessor = BasicImgPreprocessor(sudoku_image, config)
+    preprocessor = BasicImgPreprocessor(sudoku_image, preprocessing_config)
     binary_image = preprocessor.do_preprocessing()
 
 
-    grid_finder = BasicGridFinder(sudoku_image, binary_image, config)
+    grid_finder = BasicGridFinder(sudoku_image, binary_image, grid_finder_config)
     transformed_grid = grid_finder.find_grid()
 
 
