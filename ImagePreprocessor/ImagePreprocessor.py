@@ -1,12 +1,10 @@
 import cv2
 from abc import ABCMeta, abstractmethod
-from utilities.image import load_image
 
 
 class ImagePreprocessor(metaclass=ABCMeta):
-    def __init__(self, img_path, config):
-        self.image = load_image(img_path, cv2.IMREAD_GRAYSCALE)
-
+    def __init__(self, img_gray, config):
+        self.image = img_gray
         self.config = config
 
     @abstractmethod

@@ -23,3 +23,5 @@ class BasicImgPreprocessor(ImagePreprocessor):
         closing_kernel = np.ones(self.config.preprocessing.closing_kernel, np.uint8)
         self._opening = cv2.morphologyEx(self._thresholded_img, cv2.MORPH_OPEN, opening_kernel)
         self._opening_closing = cv2.morphologyEx(self._opening, cv2.MORPH_CLOSE, closing_kernel)
+
+        return self._opening_closing
