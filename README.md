@@ -5,7 +5,8 @@ Converts image of SUDOKU into digital form
  - Using Python 3.7.2 and OpenCV 3.4.2
  
  ## How to use:
-   - Use the ```enviroment.yml``` to create virtual environment using the conda's command ```conda env create -f environment.yml```  
+   - Use the ```enviroment.yml``` to create virtual environment using the conda's command 
+   ```conda env create -f environment.yml```  
    - Run from the commmand line with the image as the only mandatory argument
     ```python3 main.py tests/test_images/2.jpg```
    - Create own config file and pass it's path via optional argument (the name of the config file MUST be ```config.py```
