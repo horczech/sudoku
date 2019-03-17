@@ -2,10 +2,11 @@ import pytest
 import glob
 from ImagePreprocessor.BasicPreprocessor import BasicImgPreprocessor
 from GridFinder.BasicGridFinder import BasicGridFinder
+from DigitRecogniser.BasicDigitRecogniser import BasicDigitRecogniser
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from utilities.image import load_image
+from utilities.utils import load_image, draw_bboxes, show_sudoku_grid
 
 
 TEST_IMG_PATH = r'tests/test_images'
@@ -13,7 +14,7 @@ TEST_IMG_PATH = r'tests/test_images'
 
 @pytest.mark.parametrize("sudoku_img_path", glob.glob(TEST_IMG_PATH + '/*.jpg'))
 def test_preprocessing(sudoku_img_path):
-    from configs.default_config import preprocessing as config
+    from configs.config_1.config import preprocessing as config
 
     sudoku_image = load_image(sudoku_img_path, cv2.IMREAD_GRAYSCALE)
 
@@ -42,8 +43,8 @@ def test_preprocessing(sudoku_img_path):
 
 @pytest.mark.parametrize("sudoku_img_path", glob.glob(TEST_IMG_PATH + '/*.jpg'))
 def test_grid_finder(sudoku_img_path):
-    from configs.default_config import GridFinder as grid_finder_config
-    from configs.default_config import preprocessing as preprocessing_config
+    from configs.config_1.config import GridFinder as grid_finder_config
+    from configs.config_1.config import preprocessing as preprocessing_config
 
     sudoku_image = load_image(sudoku_img_path, cv2.IMREAD_GRAYSCALE)
 
@@ -100,6 +101,67 @@ def test_grid_finder(sudoku_img_path):
     plt.subplot(2, 3, 6)
     plt.imshow(transformed_grid, cmap='gray')
     plt.title('Transformed image')
+
+
+    plt.show()
+
+
+@pytest.mark.parametrize("sudoku_img_path", glob.glob(TEST_IMG_PATH + '/*.jpg'))
+def test_digit_recogniser(sudoku_img_path):
+    from configs.config_1.config import GridFinder as grid_finder_config
+    from configs.config_1.config import preprocessing as preprocessing_config
+    from configs.config_1.config import DigitRecogniser as digit_recogniser_config
+
+
+    sudoku_image = load_image(sudoku_img_path, cv2.IMREAD_GRAYSCALE)
+
+    preprocessor = BasicImgPreprocessor(sudoku_image, preprocessing_config)
+    binary_image = preprocessor.do_preprocessing()
+
+
+    grid_finder = BasicGridFinder(sudoku_image, binary_image, grid_finder_config)
+    transformed_grid = grid_finder.find_grid()
+
+    digit_recogniser = BasicDigitRecogniser(transformed_grid, digit_recogniser_config)
+    sudoku_array = digit_recogniser.get_digits()
+
+    show_sudoku_grid(sudoku_array)
+
+
+
+    unfiltered_bboxes_img = draw_bboxes(digit_recogniser._filtered_grid_img, digit_recogniser._unfiltered_digit_bboxes, (255, 0, 0))
+    digit_bboxes_img = draw_bboxes(unfiltered_bboxes_img, digit_recogniser._filtered_digit_bboxes, (0, 0, 255))
+
+
+    plt.subplot(3,2,1)
+    plt.imshow(digit_recogniser.image, cmap='gray')
+    plt.title("input")
+
+    plt.subplot(3,2,2)
+    plt.imshow(digit_recogniser._blur_img, cmap='gray')
+    plt.title("blured img")
+
+    plt.subplot(3,2,3)
+    plt.imshow(digit_recogniser._thresholded_img, cmap='gray')
+    plt.title("thresholded image")
+
+    plt.subplot(3,2,4)
+    plt.imshow(digit_recogniser._grid_lines_img, cmap='gray')
+    plt.title("horizontal lines image")
+
+    plt.subplot(3,2,5)
+    plt.imshow(digit_recogniser._filtered_grid_img, cmap='gray')
+    plt.title("filtered grid")
+
+    plt.subplot(3,2,6)
+    plt.imshow(digit_bboxes_img)
+    plt.title("non filtered bbox")
+
+    cv2.imshow('both', digit_recogniser._grid_lines_img)
+    cv2.imshow('the', digit_recogniser._thresholded_img)
+    cv2.imshow('filtered', digit_recogniser._filtered_grid_img)
+    cv2.imshow('bboxes', digit_bboxes_img)
+
 
 
     plt.show()
