@@ -1,5 +1,24 @@
-# sudoku
-Read numbers from sudoku image
+# SUDOKU 
+Converts image of SUDOKU into digital form
 
 
- - Using Python 3.7.1 and OpenCV 3.4.1
+ - Using Python 3.7.2 and OpenCV 3.4.2
+ 
+ ## How to use:
+   - Run from the commmand line with the image as the only mandatory argument
+    ```python3 main.py tests/test_images/2.jpg```
+   - Create own config file and pass it's path via optional argument (the name of the config file MUST be ```config.py```)
+   
+   ```python3 main.py tests/test_images/2.jpg --config configs/config_1/config.py```
+   
+   - Run the pytest in the tests/ directory. Each step will visualize individual steps during the image processing
+   
+   - Parameters of the algorithm can be tuned in the config file located in ```configs/config_1/config.py```
+    
+ 
+ ## ToDo:
+  - [ ] Tune the parameters and make the algorithm more robust
+  - [ ] Find out why the OCR has problem with some numbers (e.g. 1)
+  - [ ] make the algorithm faster (currently it takes 9sec on my PC)
+  - [ ] collect more test images with annotations and make real tests
+  - [ ] find better way how to load config file
