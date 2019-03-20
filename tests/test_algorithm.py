@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from utilities.utils import load_image, draw_bboxes, show_sudoku_grid
 
 
-TEST_IMG_PATH = r'tests/test_images'
+TEST_IMG_PATH = r'tests/unannotated_imgs'
 
 
 @pytest.mark.parametrize("sudoku_img_path", glob.glob(TEST_IMG_PATH + '/*.jpg'))
