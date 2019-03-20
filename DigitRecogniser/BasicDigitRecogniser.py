@@ -4,12 +4,14 @@ from matplotlib import pyplot as plt
 import numpy as np
 import pytesseract
 from constants import SUDOKU_GRID_SIZE, ERROR_VALUE, EMPTY_CELL_VALUE, SUDOKU_VALUE_RANGE
+from utilities.utils import timeit
 
 
 class BasicDigitRecogniser(DigitRecogniser):
     def __init__(self, grid_img, config):
         super().__init__(grid_img, config)
 
+    @timeit
     def get_digits(self):
         ## binarize image
         self._blur_img = cv2.GaussianBlur(self.image,
@@ -52,7 +54,7 @@ class BasicDigitRecogniser(DigitRecogniser):
 
         return sudoku_grid.flatten()
 
-
+    @timeit
     def clasiffy_digits(self, image, bboxes):
 
         classified_digits = []
@@ -64,7 +66,9 @@ class BasicDigitRecogniser(DigitRecogniser):
 
             self._digit_img = cv2.bitwise_not(image[top_left_pt[1]:bottom_right_pt[1], top_left_pt[0]:bottom_right_pt[0]])
 
-            classified_digit = pytesseract.image_to_string(self._digit_img, lang='eng', config=self.config.pytesseract_config)
+            # classified_digit = pytesseract.image_to_string(self._digit_img, lang='eng', config=self.config.pytesseract_config)
+
+            classified_digit = self.classification_of_one_digit()
 
             try:
                 classified_digit = int(classified_digit)
@@ -82,6 +86,13 @@ class BasicDigitRecogniser(DigitRecogniser):
             classified_digits.append(classified_digit)
 
         return classified_digits
+
+    # ToDo: Remove after the execution time will be short enough - its here just for timing purpose
+    @timeit
+    def classification_of_one_digit(self):
+        classified_digit = pytesseract.image_to_string(self._digit_img, lang='eng', config=self.config.pytesseract_config)
+
+        return classified_digit
 
     def get_digit_grid_possition(self, digit_bboxes):
 

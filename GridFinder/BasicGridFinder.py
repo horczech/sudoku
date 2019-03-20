@@ -1,12 +1,14 @@
 from GridFinder.GridFinder import GridFinder
 import cv2
 import numpy as np
+from utilities.utils import timeit
 
 
 class BasicGridFinder(GridFinder):
     def __init__(self, original_img, binary_image, config):
         super().__init__(original_img, binary_image, config)
 
+    @timeit
     def find_grid(self):
         _, self._contours, _ = cv2.findContours(self.binary_img,
                                                 mode=cv2.RETR_EXTERNAL,

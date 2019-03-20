@@ -1,6 +1,8 @@
 from ImagePreprocessor.ImagePreprocessor import ImagePreprocessor
 import cv2
 import numpy as np
+from utilities.utils import timeit
+
 
 
 class BasicImgPreprocessor(ImagePreprocessor):
@@ -8,6 +10,7 @@ class BasicImgPreprocessor(ImagePreprocessor):
     def __init__(self, img_path, config_path):
         super().__init__(img_path, config_path)
 
+    @timeit
     def do_preprocessing(self):
         self._blur_img = cv2.GaussianBlur(self.image,
                                           ksize=self.config.blur_kernel,
