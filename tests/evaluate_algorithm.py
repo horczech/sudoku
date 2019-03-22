@@ -108,7 +108,7 @@ def print_accuracy(true, pred):
 
 
 if __name__ == '__main__':
-    evaluation_data_path = r'sudoku_imgs/unannotated_imgs'
+    evaluation_data_path = r'sudoku_imgs/easy_dataset'
     config_path = r'configs/config_1/config.py'
 
     evaluate(basic_pipeline, evaluation_data_path, config_path)

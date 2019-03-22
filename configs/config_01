@@ -1,0 +1,49 @@
+
+grid_finder:
+# --- image preprocessing
+    blur_kernel: [7, 7]  # must be odd number
+    blur_sigma : 0
+
+    # Two possible methods ADAPTIVE_THRESH_MEAN_C or ADAPTIVE_THRESH_GAUSSIAN_C
+    thresh_adaptiveMethod : ADAPTIVE_THRESH_GAUSSIAN_C
+    thresh_blockSize : 15  # must be odd number
+    thresh_C : 3
+
+    # Morphological Transformations
+    opening_kernel : [3, 3]  # must be odd number
+    closing_kernel : [3, 3]  # must be odd number
+
+
+# --- grid detection and transformation
+    #contour approximation (epsilon is maximum distance from contour to approximated contour)
+    epsilon: 0.01
+
+    # length of square edge
+    output_grid_size : 500
+
+
+digit_classifier:
+
+# --- image preprocessing
+    blur_kernel : [7, 7]  # must be odd number
+    blur_sigma : 0
+
+    # Two possible methods ADAPTIVE_THRESH_MEAN_C or ADAPTIVE_THRESH_GAUSSIAN_C
+    thresh_adaptiveMethod : ADAPTIVE_THRESH_GAUSSIAN_C
+    thresh_blockSize : 15  # must be odd number
+    thresh_C : 3
+
+    # filtering of horizontal and vertical lines
+    shorter_side_px: 1
+    longer_side_factor: 9 # the input image size will be divided by this number to get longer side of the kernel
+
+    # filtering contours that does not contain digit
+    aspect_ratio_range : [0.2, 0.9]
+    min_digit_area : 100  # ToDo: Absolute value is not optimal
+
+    # the space around the digit
+    digit_padding : 10
+    pytesseract_config : '--psm 10 -c tessedit_char_whitelist=123456789'
+
+
+

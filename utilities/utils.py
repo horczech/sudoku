@@ -30,41 +30,6 @@ def draw_bboxes(img, bboxes, color=(0,0,255), thickness=2):
     return output_img
 
 
-def show_sudoku_grid(sudoku_array):
-    # replace empty cells with dots and wrongly classified digits to 'x'
-    sudoku_array = sudoku_array.astype(str)
-
-    sudoku_array[sudoku_array == str(EMPTY_CELL_VALUE)] = '.'
-    sudoku_array[sudoku_array == str(ERROR_VALUE)] = 'x'
-
-
-    # First part. Adds pipes and hyphens to inputted string to seperate boxes in the grid.
-    old = list(sudoku_array)
-    new = []
-    count = 1
-    for one in old:
-        new.append(one)
-        if count % 3 == 0 and count % 9 != 0:
-            new.append('|')
-        if count % 27 == 0 and count < 81:
-            [new.append('-') for i in range(1, 12)]
-        count += 1
-
-    sudoku_array = ''.join(new)
-
-    # Second part. Prints out a nice grid from the result above.
-    row = []
-    col = 0
-    print('\n\n')
-    for one in sudoku_array:
-        row.append(one + ' ')
-        col += 1
-        if col == 11:
-            print(''.join(row))
-            col = 0
-            row = []
-
-
 def timeit(method):
     def timed(*args, **kw):
         ts = time.time()

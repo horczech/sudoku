@@ -1,8 +1,8 @@
 import pytest
 import glob
 from ImagePreprocessor.BasicPreprocessor import BasicImgPreprocessor
-from GridFinder.BasicGridFinder import BasicGridFinder
-from DigitRecogniser.BasicDigitRecogniser import BasicDigitRecogniser
+from GridFinder.ContourBasedSudokuFinder import ContourBasedSudokuFinder
+from CellClassifier.BasicDigitRecogniser import BasicDigitRecogniser
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -52,7 +52,7 @@ def test_grid_finder(sudoku_img_path):
     binary_image = preprocessor.do_preprocessing()
 
 
-    grid_finder = BasicGridFinder(sudoku_image, binary_image, grid_finder_config)
+    grid_finder = ContourBasedSudokuFinder(sudoku_image, binary_image, grid_finder_config)
     transformed_grid = grid_finder.find_grid()
 
 
@@ -119,7 +119,7 @@ def test_digit_recogniser(sudoku_img_path):
     binary_image = preprocessor.do_preprocessing()
 
 
-    grid_finder = BasicGridFinder(sudoku_image, binary_image, grid_finder_config)
+    grid_finder = ContourBasedSudokuFinder(sudoku_image, binary_image, grid_finder_config)
     transformed_grid = grid_finder.find_grid()
 
     digit_recogniser = BasicDigitRecogniser(transformed_grid, digit_recogniser_config)
@@ -129,7 +129,7 @@ def test_digit_recogniser(sudoku_img_path):
 
 
 
-    unfiltered_bboxes_img = draw_bboxes(digit_recogniser._filtered_grid_img, digit_recogniser._unfiltered_digit_bboxes, (255, 0, 0))
+    unfiltered_bboxes_img = draw_bboxes(digit_recogniser._gridless_img, digit_recogniser._unfiltered_digit_bboxes, (255, 0, 0))
     digit_bboxes_img = draw_bboxes(unfiltered_bboxes_img, digit_recogniser._filtered_digit_bboxes, (0, 0, 255))
 
 
@@ -150,7 +150,7 @@ def test_digit_recogniser(sudoku_img_path):
     plt.title("horizontal lines image")
 
     plt.subplot(3,2,5)
-    plt.imshow(digit_recogniser._filtered_grid_img, cmap='gray')
+    plt.imshow(digit_recogniser._gridless_img, cmap='gray')
     plt.title("filtered grid")
 
     plt.subplot(3,2,6)
@@ -159,7 +159,7 @@ def test_digit_recogniser(sudoku_img_path):
 
     cv2.imshow('both', digit_recogniser._grid_lines_img)
     cv2.imshow('the', digit_recogniser._thresholded_img)
-    cv2.imshow('filtered', digit_recogniser._filtered_grid_img)
+    cv2.imshow('filtered', digit_recogniser._gridless_img)
     cv2.imshow('bboxes', digit_bboxes_img)
 
 

@@ -5,13 +5,12 @@ import os
 import argparse
 
 
-from DigitRecogniser.BasicDigitRecogniser import BasicDigitRecogniser
-from GridFinder.BasicGridFinder import BasicGridFinder
+from CellClassifier.BasicDigitRecogniser import BasicDigitRecogniser
+from GridFinder.ContourBasedSudokuFinder import ContourBasedSudokuFinder
 from ImagePreprocessor.BasicPreprocessor import BasicImgPreprocessor
 from utilities.utils import load_image, show_sudoku_grid, timeit
 
 
-@timeit
 def basic_pipeline(img_path, config_path):
     sys.path.append(os.path.dirname(os.path.expanduser(config_path)))
 
@@ -26,7 +25,7 @@ def basic_pipeline(img_path, config_path):
     binary_image = preprocessor.do_preprocessing()
 
 
-    grid_finder = BasicGridFinder(sudoku_image, binary_image, grid_finder_config)
+    grid_finder = ContourBasedSudokuFinder(sudoku_image, binary_image, grid_finder_config)
     transformed_grid = grid_finder.find_grid()
 
     digit_recogniser = BasicDigitRecogniser(transformed_grid, digit_recogniser_config)
