@@ -11,7 +11,7 @@ grid_finder:
 
     # Morphological Transformations
     opening_kernel : [3, 3]  # must be odd number
-    closing_kernel : [3, 3]  # must be odd number
+    closing_kernel : [5, 5]  # must be odd number
 
 
 # --- grid detection and transformation
@@ -25,7 +25,7 @@ grid_finder:
 digit_classifier:
 
 # --- image preprocessing
-    blur_kernel : [7, 7]  # must be odd number
+    blur_kernel : [5, 5]  # must be odd number
     blur_sigma : 0
 
     # Two possible methods ADAPTIVE_THRESH_MEAN_C or ADAPTIVE_THRESH_GAUSSIAN_C

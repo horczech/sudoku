@@ -8,6 +8,27 @@ class SudokuCorners:
         self.top_right_pt = top_right_pt
         self.top_left_pt = top_left_pt
 
+        self._array = np.array([self.top_left_pt, self.top_right_pt, self.bottom_right_pt, self.bottom_left_pt])
+        self._idx = 0
+
+
+    def __iter__(self):
+        self._idx = 0
+
+        return self
+
+    def __next__(self):
+        if self._idx < len(self._array):
+            result = self._array[self._idx]
+            self._idx += 1
+
+            return result
+        else:
+            raise StopIteration
+
+
+
+
     def get_array(self, dtype=np.float32):
         return np.array([self.top_left_pt, self.top_right_pt, self.bottom_right_pt, self.bottom_left_pt], dtype=dtype)
 

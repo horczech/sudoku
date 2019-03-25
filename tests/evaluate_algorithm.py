@@ -4,11 +4,7 @@ from constants import EMPTY_CELL_VALUE
 import numpy as np
 from sklearn.metrics import confusion_matrix, accuracy_score
 import pandas as pd
-
-
-
-# ToDo: WROOOOOOOOOONG!!!!
-from main import basic_pipeline
+import converter_pipelines
 
 
 IMG_FORMAT = '.jpg'
@@ -74,9 +70,9 @@ def evaluate(evaluated_method, evaluation_data_path, config_path):
 
             print('\n_______________OK___________________')
             print(f'Image name: {data.image_name}')
-            print_accuracy(data.true, predicted)
+            print_accuracy(data.true, predicted.values)
 
-            all_predicted.append(predicted)
+            all_predicted.append(predicted.values)
             all_true.append(data.true)
         except Exception as e:
             print('\n_______________FAIL___________________')
@@ -102,13 +98,13 @@ def evaluate(evaluated_method, evaluation_data_path, config_path):
 def print_accuracy(true, pred):
     full_cell_idx = np.argwhere(true != EMPTY_CELL_VALUE)
     empty_cell_idx = np.argwhere(true == EMPTY_CELL_VALUE)
-    print(f'    Accuracy - all cells: {accuracy_score(true, pred)}')
-    print(f'    Accuracy - full cells: {accuracy_score(true[full_cell_idx], pred[full_cell_idx])}')
-    print(f'    Accuracy - empty cells: {accuracy_score(true[empty_cell_idx], pred[empty_cell_idx])}')
+    print(f'    Accuracy - all cells: {accuracy_score(true, pred):.2}')
+    print(f'    Accuracy - full cells: {accuracy_score(true[full_cell_idx], pred[full_cell_idx]):.2}')
+    print(f'    Accuracy - empty cells: {accuracy_score(true[empty_cell_idx], pred[empty_cell_idx]):.2}')
 
 
 if __name__ == '__main__':
     evaluation_data_path = r'sudoku_imgs/easy_dataset'
-    config_path = r'configs/config_1/config.py'
+    config_path = r'configs/config_01'
 
-    evaluate(basic_pipeline, evaluation_data_path, config_path)
+    evaluate(converter_pipelines.converter_v1, evaluation_data_path, config_path)

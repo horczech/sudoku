@@ -40,6 +40,10 @@ class BasicDigitRecogniser(CellClassifier):
                                                       blockSize=self.thresh_blockSize,
                                                       C=self.thresh_C)
 
+        opening_kernel = np.ones((3,3), np.uint8)
+        self._thresholded_img = cv2.morphologyEx(self._thresholded_img, cv2.MORPH_OPEN, opening_kernel)
+
+
         # filter out horizontal and vertical lines
         horizontal_lines_img = self.filter_lines(self._thresholded_img, is_horizontal=True)
         vertical_lines_img = self.filter_lines(self._thresholded_img, is_horizontal=False)
@@ -106,9 +110,12 @@ class BasicDigitRecogniser(CellClassifier):
 
         return Sudoku.from_digit_and_idx(classified_digits, grid_indexes)
 
-    @timeit
+    # @timeit
     def classify_digit(self, digit_img):
-        classified_digit = pytesseract.image_to_string(digit_img, lang='eng', config=self.pytesseract_config)
+        try:
+            classified_digit = pytesseract.image_to_string(digit_img, lang='eng', config=self.pytesseract_config)
+        except:
+            classified_digit = -1
         return classified_digit
 
     def filter_lines(self, binary_image, is_horizontal):

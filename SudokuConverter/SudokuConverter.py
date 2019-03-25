@@ -18,7 +18,7 @@ class SudokuConverter:
         self._cropped_sudoku = self.grid_finder.crop_sudoku(self._gray_img, self._sudoku_corners)
 
         # Classify each cell
-        self._cropped_binary_img = self.cell_classifier.preprocess_image(self._gray_img)
+        self._cropped_binary_img = self.cell_classifier.preprocess_image(self._cropped_sudoku)
         self._digit_bboxes = self.cell_classifier.get_digit_bboxes(self._cropped_binary_img)
         self._grid_indexes = self.cell_classifier.get_digit_grid_indexes(self._cropped_binary_img, self._digit_bboxes)
         self.sudoku = self.cell_classifier.clasiffy_digits(self._cropped_binary_img, self._digit_bboxes, self._grid_indexes)
@@ -37,12 +37,7 @@ if __name__ == '__main__':
     from GridFinder.ContourBasedSudokuFinder import ContourBasedSudokuFinder
     from CellClassifier.BasicDigitRecogniser import BasicDigitRecogniser
 
-    a = cv2.ADAPTIVE_THRESH_GAUSSIAN_C
-    b = cv2.ADAPTIVE_THRESH_MEAN_C
-
-
-
-    image_path = r'sudoku_imgs/easy_dataset/2.jpg'
+    image_path = r'sudoku_imgs/annotated_test_imgs/image1024.jpg'
     config_path = r'configs/config_01'
 
     sudoku_img = cv2.imread(image_path)
