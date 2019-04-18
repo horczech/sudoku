@@ -1,4 +1,4 @@
-from CellClassifier.CellClassifier import CellClassifier
+from Classifier.CellClassifier import CellClassifier
 import cv2
 from matplotlib import pyplot as plt
 import numpy as np
@@ -29,47 +29,111 @@ class BasicDigitRecogniser(CellClassifier):
         self.digit_padding = config['digit_padding']
         self.pytesseract_config = config['pytesseract_config']
 
-    def preprocess_image(self, gray_img):
-        self._blur_img = cv2.GaussianBlur(gray_img,
+    def classify_cells(self, cropped_sudoku_img, is_debugging_mode=False):
+        binary_img = self.preprocess_image(cropped_sudoku_img, is_debugging_mode=is_debugging_mode)
+
+        digit_bboxes = self.get_digit_bboxes(binary_img)
+        grid_indexes = self.get_digit_grid_indexes(binary_img, digit_bboxes)
+        sudoku = self.clasiffy_digits(binary_img, digit_bboxes, grid_indexes)
+
+        if is_debugging_mode:
+            from matplotlib import pyplot as plt
+            from utilities.utils import draw_bboxes
+
+            plt.figure('Digit classification')
+
+            plt.subplot(2,3,1)
+            plt.imshow(cropped_sudoku_img, cmap='gray')
+            plt.title('Input image')
+
+            plt.subplot(2,3,2)
+            plt.imshow(binary_img, cmap='gray')
+            plt.title('Binarized img')
+
+            plt.subplot(2,3,3)
+            bbox_img = cv2.cvtColor(binary_img, cv2.COLOR_GRAY2BGR)
+            bbox_img = draw_bboxes(bbox_img, digit_bboxes,thickness=3)
+            plt.imshow(bbox_img)
+            plt.title('Found bboxes')
+
+            cv2.imshow('Found bboxes', bbox_img)
+
+            plt.show()
+
+        return sudoku
+
+    def preprocess_image(self, gray_img, is_debugging_mode=False):
+        blur_img = cv2.GaussianBlur(gray_img,
                                           ksize=self.blur_kernel,
                                           sigmaX=self.blur_sigma)
-        self._thresholded_img = cv2.adaptiveThreshold(self._blur_img,
+        thresholded_img = cv2.adaptiveThreshold(blur_img,
                                                       maxValue=255,
                                                       adaptiveMethod=self.thresh_adaptiveMethod,
                                                       thresholdType=cv2.THRESH_BINARY_INV,
                                                       blockSize=self.thresh_blockSize,
                                                       C=self.thresh_C)
 
-        opening_kernel = np.ones((3,3), np.uint8)
-        self._thresholded_img = cv2.morphologyEx(self._thresholded_img, cv2.MORPH_OPEN, opening_kernel)
+        opening_kernel = np.ones((3, 3), np.uint8)
+        morph_img = cv2.morphologyEx(thresholded_img, cv2.MORPH_OPEN, opening_kernel)
 
 
         # filter out horizontal and vertical lines
-        horizontal_lines_img = self.filter_lines(self._thresholded_img, is_horizontal=True)
-        vertical_lines_img = self.filter_lines(self._thresholded_img, is_horizontal=False)
-        self._grid_lines_img = cv2.bitwise_or(horizontal_lines_img, vertical_lines_img)
-        self._gridless_img = cv2.bitwise_and(self._thresholded_img, self._thresholded_img, mask=cv2.bitwise_not(self._grid_lines_img))
+        horizontal_lines_img = self.filter_lines(morph_img, is_horizontal=True)
+        vertical_lines_img = self.filter_lines(morph_img, is_horizontal=False)
+        grid_lines_img = cv2.bitwise_or(horizontal_lines_img, vertical_lines_img)
+        gridless_img = cv2.bitwise_and(morph_img, morph_img, mask=cv2.bitwise_not(grid_lines_img))
 
-        return self._gridless_img
 
+        if is_debugging_mode:
+            import matplotlib.pyplot as plt
+
+            plt.figure('Image preprocessing')
+
+            plt.subplot(2,3,1)
+            plt.imshow(gray_img, cmap='gray')
+            plt.title('Input image')
+
+            plt.subplot(2,3,2)
+            plt.imshow(blur_img, cmap='gray')
+            plt.title('Blurred img')
+
+            plt.subplot(2,3,3)
+            plt.imshow(thresholded_img, cmap='gray')
+            plt.title('Thresholded img')
+
+            plt.subplot(2,3,4)
+            plt.imshow(morph_img, cmap='gray')
+            plt.title('Morphological transf. img')
+
+            plt.subplot(2,3,5)
+            plt.imshow(grid_lines_img, cmap='gray')
+            plt.title('Grid lines')
+
+            plt.subplot(2,3,6)
+            plt.imshow(gridless_img, cmap='gray')
+            plt.title('Img without grid lines')
+
+            plt.show()
+
+        return gridless_img
 
     def get_digit_bboxes(self, cropped_binary_img):
         # find digits and its possitions
         _, contours, _ = cv2.findContours(cropped_binary_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        self._filtered_digit_bboxes = []
-        self._unfiltered_digit_bboxes = []
+        filtered_digit_bboxes = []
+        unfiltered_digit_bboxes = []
         for contour in contours:
             boundary_box = cv2.boundingRect(contour)
-            self._unfiltered_digit_bboxes.append(boundary_box)
+            unfiltered_digit_bboxes.append(boundary_box)
             x, y, w, h = boundary_box
 
             aspect_ratio = w/h
             area = w*h
             if self.aspect_ratio_range[0] < aspect_ratio < self.aspect_ratio_range[1] and area > self.min_digit_area:
-                self._filtered_digit_bboxes.append(boundary_box)
+                filtered_digit_bboxes.append(boundary_box)
 
-        return np.asarray(self._filtered_digit_bboxes)
+        return np.asarray(filtered_digit_bboxes)
 
     def get_digit_grid_indexes(self, binary_img, digit_bboxes):
         cell_size = binary_img.shape[0]/9
@@ -110,7 +174,7 @@ class BasicDigitRecogniser(CellClassifier):
 
         return Sudoku.from_digit_and_idx(classified_digits, grid_indexes)
 
-    # @timeit
+    @timeit
     def classify_digit(self, digit_img):
         try:
             classified_digit = pytesseract.image_to_string(digit_img, lang='eng', config=self.pytesseract_config)
@@ -134,4 +198,38 @@ class BasicDigitRecogniser(CellClassifier):
         filtered_img = cv2.dilate(filtered_img, structure)
 
         return filtered_img
+
+if __name__ == '__main__':
+    from glob import glob
+    from os import path
+    import yaml
+    from GridFinder.ContourGridFinder import ContourGridFinder
+
+    img_format = r'.jpg'
+    folder_path = r'sudoku_imgs/easy_dataset'
+    # folder_path = r'sudoku_imgs/annotated_test_imgs'
+
+    config_path = r'configs/config_03'
+
+    with open(config_path, 'r') as ymlfile:
+        config = yaml.load(ymlfile, Loader=yaml.Loader)
+
+    img_path_list = glob(path.join(folder_path, '*' + img_format))
+
+
+    grid_finder = ContourGridFinder(config['grid_finder'])
+    cell_classifier = BasicDigitRecogniser(config['digit_classifier'])
+
+
+
+    for img_path in img_path_list:
+        print(img_path)
+
+        cropped_sudoku_img = grid_finder.cut_sudoku_grid(cv2.imread(img_path, cv2.IMREAD_GRAYSCALE))
+        digital_sudoku = cell_classifier.classify_cells(cropped_sudoku_img, is_debugging_mode=True)
+
+        print(digital_sudoku)
+
+
+
 

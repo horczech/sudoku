@@ -16,6 +16,7 @@ def run(img_path, config_path):
 
 
 if __name__ == '__main__':
+
     parser = argparse.ArgumentParser(description='Digitize SUDOKU image')
 
     parser.add_argument('img', type=str, help='Path to image')

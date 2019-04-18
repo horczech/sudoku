@@ -56,6 +56,13 @@ class SudokuCorners:
 
         return cls(top_left_pt, top_right_pt, bottom_right_pt, bottom_left_pt)
 
+    def get_scaled_corners(self, fx, fy):
+        corner_pts = self.get_array()
+        corner_pts[:, 0] = corner_pts[:, 0] / fx
+        corner_pts[:, 1] = corner_pts[:, 1] / fy
+
+        return corner_pts
+
 
 
 

@@ -1,0 +1,37 @@
+
+grid_finder:
+# --- image preprocessing
+  resized_img_shape: [800, 800]
+  blur_kernel: 5 # must be odd
+
+
+  # Two possible methods ADAPTIVE_THRESH_MEAN_C or ADAPTIVE_THRESH_GAUSSIAN_C
+  thresh_adaptiveMethod : ADAPTIVE_THRESH_MEAN_C
+  thresh_blockSize : 11  # must be odd number
+  thresh_C : 2
+
+  morph_transf_ksize: [5, 5]
+
+
+
+# --- grid detection and transformation
+
+  hough_lines_rho: 1
+  hough_lines_theta_deg: 1
+  hough_lines_threshold: 100
+  hough_lines_min_length:
+  hough_lines_max_gap:
+
+
+  histogram_bins: 180
+  histogram_range: [0, 180]
+  histogram_min_distance_between_peaks_deg: 80
+
+  filter_lines_angle_hysteresis_deg: 5
+
+
+
+digit_classifier:
+
+# --- image preprocessing
+
