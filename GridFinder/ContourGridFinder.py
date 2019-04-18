@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
-from utilities.utils import timeit
-from GridFinder.SudokuCorners import SudokuCorners
+from utilities.SudokuCorners import SudokuCorners
 
 from GridFinder.SudokuFinder import GridFinder
 

@@ -1,8 +1,7 @@
 from GridFinder.SudokuFinder import GridFinder
 import cv2
 import numpy as np
-from scipy.signal import find_peaks
-from GridFinder.Line import Line
+from utilities.Line import Line
 
 class LineBasedGridFinder(GridFinder):
 
@@ -337,7 +336,7 @@ class LineBasedGridFinder(GridFinder):
 
     def visualize_steps(self, gray_img):
         from matplotlib import pyplot as plt
-        from utilities.utils import draw_lines, draw_probabilistic_lines, draw_line_objects
+        from utilities.utils import draw_lines, draw_line_objects
 
         binary_img = self.preprocess_image(gray_img)
         self.find_sudoku_corners(binary_img)

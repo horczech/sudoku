@@ -1,11 +1,10 @@
 from Classifier.CellClassifier import CellClassifier
 import cv2
-from matplotlib import pyplot as plt
 import numpy as np
 import pytesseract
-from constants import SUDOKU_GRID_SIZE, ERROR_VALUE, EMPTY_CELL_VALUE, SUDOKU_VALUE_RANGE
+from constants import ERROR_VALUE, SUDOKU_VALUE_RANGE
 from utilities.utils import timeit
-from Sudoku import Sudoku
+from utilities.Sudoku import Sudoku
 
 
 class BasicDigitRecogniser(CellClassifier):
