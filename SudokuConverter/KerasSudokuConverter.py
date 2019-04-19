@@ -1,6 +1,5 @@
 import cv2
 import yaml
-from utilities.utils import timeit
 
 
 def run():

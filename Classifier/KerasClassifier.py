@@ -1,4 +1,4 @@
-from Classifier.BasicCellClassifier import BasicDigitRecogniser
+from Classifier.CellClassifier import CellClassifier
 from utilities.utils import timeit
 from constants import ERROR_VALUE, SUDOKU_VALUE_RANGE
 from utilities.Sudoku import Sudoku
@@ -9,13 +9,46 @@ from keras import models
 import numpy as np
 
 
-
-class KerasClassifier(BasicDigitRecogniser):
+class KerasClassifier(CellClassifier):
 
     def __init__(self, config):
         super().__init__(config)
 
+        # ToDo: Put somewhere else
         self.model = models.load_model(r'KerasDigitRecognition/models/model_01.h5')
+
+    def classify_cells(self, cropped_sudoku_img, is_debugging_mode=False):
+        binary_img = self.preprocess_image(cropped_sudoku_img, is_debugging_mode=is_debugging_mode)
+
+        digit_bboxes = self.get_digit_bboxes(binary_img)
+        grid_indexes = self.get_digit_grid_indexes(binary_img, digit_bboxes)
+        sudoku = self.clasiffy_digits(binary_img, digit_bboxes, grid_indexes)
+
+        if is_debugging_mode:
+            from matplotlib import pyplot as plt
+            from utilities.utils import draw_bboxes
+
+            plt.figure('Digit classification')
+
+            plt.subplot(2,3,1)
+            plt.imshow(cropped_sudoku_img, cmap='gray')
+            plt.title('Input image')
+
+            plt.subplot(2,3,2)
+            plt.imshow(binary_img, cmap='gray')
+            plt.title('Binarized img')
+
+            plt.subplot(2,3,3)
+            bbox_img = cv2.cvtColor(binary_img, cv2.COLOR_GRAY2BGR)
+            bbox_img = draw_bboxes(bbox_img, digit_bboxes,thickness=3)
+            plt.imshow(bbox_img)
+            plt.title('Found bboxes')
+
+            cv2.imshow('Found bboxes', bbox_img)
+
+            plt.show()
+
+        return sudoku
 
     @timeit
     def clasiffy_digits(self, binary_img, digit_bboxes, grid_indexes):
@@ -28,10 +61,6 @@ class KerasClassifier(BasicDigitRecogniser):
             bottom_right_pt = np.array([x + w, y + h]) + self.digit_padding
 
             digit_img = binary_img[top_left_pt[1]:bottom_right_pt[1], top_left_pt[0]:bottom_right_pt[0]]
-            cv2.imshow('digit_img', digit_img)
-            cv2.waitKey()
-
-
             digit_img = cv2.resize(digit_img, (28, 28))
             digit_img = digit_img.astype('float32') / 255
 
