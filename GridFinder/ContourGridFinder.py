@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
 from utilities.SudokuCorners import SudokuCorners
+from utilities.utils import timeit
+
 
 from GridFinder.SudokuFinder import GridFinder
 
@@ -13,6 +15,8 @@ class ContourGridFinder(GridFinder):
         self.epsilon = config['epsilon']
         self.output_grid_size = config['output_grid_size']
 
+
+    @timeit
     def cut_sudoku_grid(self, sudoku_img, is_debug_mode=False):
 
         try:
@@ -46,7 +50,7 @@ class ContourGridFinder(GridFinder):
     def find_grid_corners(self, binary_img):
         # ToDo: If his method will be the one that will be used as pripary method than I should add more conditions than
         # ToDo: the biggest contour e.g. shape
-        _, contours, _ = cv2.findContours(binary_img,
+        contours, _ = cv2.findContours(binary_img,
                                                 mode=cv2.RETR_EXTERNAL,
                                                 method=cv2.CHAIN_APPROX_SIMPLE)
 

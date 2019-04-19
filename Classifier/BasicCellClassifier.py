@@ -1,11 +1,10 @@
 from Classifier.CellClassifier import CellClassifier
 import cv2
 import numpy as np
-import pytesseract
 from constants import ERROR_VALUE, SUDOKU_VALUE_RANGE
 from utilities.utils import timeit
 from utilities.Sudoku import Sudoku
-
+import pytesseract
 
 class BasicDigitRecogniser(CellClassifier):
     def __init__(self, config):
@@ -118,7 +117,7 @@ class BasicDigitRecogniser(CellClassifier):
 
     def get_digit_bboxes(self, cropped_binary_img):
         # find digits and its possitions
-        _, contours, _ = cv2.findContours(cropped_binary_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours, _ = cv2.findContours(cropped_binary_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         filtered_digit_bboxes = []
         unfiltered_digit_bboxes = []
@@ -176,6 +175,7 @@ class BasicDigitRecogniser(CellClassifier):
     @timeit
     def classify_digit(self, digit_img):
         try:
+            digit_img = cv2.resize(digit_img, (25,25))
             classified_digit = pytesseract.image_to_string(digit_img, lang='eng', config=self.pytesseract_config)
         except:
             classified_digit = -1
