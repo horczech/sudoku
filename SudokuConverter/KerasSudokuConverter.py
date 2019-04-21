@@ -1,13 +1,9 @@
 import cv2
 import yaml
+from GridFinder.ContourGridFinder import ContourGridFinder
+from Classifier.KerasClassifier import KerasClassifier
 
-
-def run():
-    from GridFinder.ContourGridFinder import ContourGridFinder
-    from Classifier.KerasClassifier import KerasClassifier
-
-    image_path = r'sudoku_imgs/annotated_test_imgs/image1072.jpg'
-    config_path = r'configs/config_03'
+def convert(image_path, config_path):
 
     sudoku_img = cv2.imread(image_path)
     with open(config_path, 'r') as ymlfile:
@@ -21,7 +17,12 @@ def run():
 
     print(digital_sudoku)
 
+    return digital_sudoku
+
 
 if __name__ == '__main__':
-    run()
+    image_path = r'sudoku_imgs/annotated_test_imgs/image1072.jpg'
+    config_path = r'configs/config_03'
+
+    convert(image_path, config_path)
 

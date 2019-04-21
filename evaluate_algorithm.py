@@ -4,7 +4,6 @@ from constants import EMPTY_CELL_VALUE
 import numpy as np
 from sklearn.metrics import confusion_matrix, accuracy_score
 import pandas as pd
-import converter_pipelines
 
 
 IMG_FORMAT = '.jpg'
@@ -63,8 +62,8 @@ def evaluate(evaluated_method, evaluation_data_path, config_path):
     all_predicted = []
     all_true = []
     failed_evaluation_count = 0
-    for data in data_array:
-
+    for count, data in enumerate(data_array):
+        print(f'\n>>> Test No.{count}/{len(data_array)}')
         try:
             predicted = evaluated_method(data.img_path, config_path)
 
@@ -104,7 +103,10 @@ def print_accuracy(true, pred):
 
 
 if __name__ == '__main__':
-    evaluation_data_path = r'sudoku_imgs/easy_dataset'
-    config_path = r'configs/config_01'
+    from SudokuConverter.KerasSudokuConverter import convert
 
-    evaluate(converter_pipelines.converter_v1, evaluation_data_path, config_path)
+    evaluation_data_path = r'sudoku_imgs/easy_dataset'
+    evaluation_data_path = r'sudoku_imgs/annotated_test_imgs'
+    config_path = r'configs/config_03'
+
+    evaluate(convert, evaluation_data_path, config_path)
