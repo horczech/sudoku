@@ -15,10 +15,19 @@ grid_finder:
 
 # --- grid detection and transformation
     #contour approximation (epsilon is maximum distance from contour to approximated contour)
-    epsilon: 0.01
+    epsilon: 0.1
 
     # length of square edge
     output_grid_size : 500
+
+    # contour area threshold in percentage of the whole image
+    contour_area_threshold: 0.1
+
+    # angle deviation of horizontal and vertical line in deg
+    angle_deviation_deg: 5
+
+    # threshold for detected lines in sudoku
+    line_theshold_count: 5
 
 
 digit_classifier:
