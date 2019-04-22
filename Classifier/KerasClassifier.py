@@ -15,7 +15,7 @@ class KerasClassifier(CellClassifier):
         super().__init__(config)
 
         # ToDo: Put somewhere else
-        self.model = models.load_model(r'KerasDigitRecognition/models/model_01.h5')
+        self.model = models.load_model(r'KerasDigitRecognition/models/model_with_ocr_data.h5')
 
     def classify_cells(self, cropped_sudoku_img, is_debugging_mode=False):
         binary_img = self.preprocess_image(cropped_sudoku_img, is_debugging_mode=is_debugging_mode)
@@ -75,7 +75,8 @@ class KerasClassifier(CellClassifier):
 
         try:
             classified_digits = self.model.predict(digit_list)
-            classified_digits = np.argmax(classified_digits, axis=1)
+            # we have to add 1 because we have numbers 1-9 so the class on zero position is 1
+            classified_digits = np.argmax(classified_digits, axis=1) + 1
 
             # ToDo: The network should be learned without zeros
             classified_digits[classified_digits == 0] = ERROR_VALUE
