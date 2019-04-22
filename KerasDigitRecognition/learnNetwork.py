@@ -8,13 +8,14 @@ from keras import models
 from keras import layers
 from keras.utils import to_categorical
 
+# VALIDATION_DATA_COUNT = 300
 VALIDATION_DATA_COUNT = 10000
 
 EPOCHS = 20
 BATCH_SIZE = 128
 
 
-def learn_model(dataset_path, model_path, train_from_scratch=False):
+def learn_model(dataset_path, load_model_path, train_from_scratch=False, save_model_path=None):
     x_train, y_train, x_test, y_test, val_x_train, val_y_train = load_dataset(dataset_path)
 
 
@@ -25,7 +26,7 @@ def learn_model(dataset_path, model_path, train_from_scratch=False):
 
     else:
         print('Loading saved model...')
-        model = models.load_model(model_path)
+        model = models.load_model(load_model_path)
 
     print(f'Model sumarry:\n {model.summary()}')
     print('...........................\n')
@@ -39,7 +40,11 @@ def learn_model(dataset_path, model_path, train_from_scratch=False):
                         verbose=2)
 
     print('Saving the model')
-    model.save(model_path)
+
+    if save_model_path is None:
+        save_model_path = load_model_path
+
+    model.save(save_model_path)
 
     evaluate_model(history, model, x_test, y_test)
 
@@ -77,7 +82,25 @@ def load_data(path):
     with np.load(path) as f:
         x_train, y_train = f['x_train'], f['y_train']
         x_test, y_test = f['x_test'], f['y_test']
+
         return (x_train, y_train), (x_test, y_test)
+
+
+def reformat_data(path):
+    with np.load(path) as f:
+        x_train, y_train = f['x_train'], f['y_train']
+        x_test, y_test = f['x_test'], f['y_test']
+
+        x_train = x_train[y_train != 0]
+        y_train = y_train[y_train != 0]
+        y_train = y_train - 1
+
+        x_test = x_test[y_test != 0]
+        y_test = y_test[y_test != 0]
+        y_test = y_test-1
+
+        np.savez(r'KerasDigitRecognition/data/mnist_dataset_without_zero.npz', x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test)
+
 
 
 def build_model():
@@ -92,7 +115,7 @@ def build_model():
     model.add(layers.Flatten())
     model.add(layers.Dense(128, activation='relu'))
     model.add(layers.Dropout(0.5))
-    model.add(layers.Dense(10, activation='softmax'))
+    model.add(layers.Dense(9, activation='softmax'))
 
     return model
 
@@ -108,15 +131,15 @@ def load_dataset(dataset_path):
 
     # Preprocessing the Data
     print('Preprocessing the data...')
-    x_train = x_train.reshape((60000, 28, 28, 1))
+    x_train = x_train.reshape((len(y_train), 28, 28, 1))
     x_train = x_train.astype('float32') / 255
 
-    x_test = x_test.reshape((10000, 28, 28, 1))
+    x_test = x_test.reshape((len(y_test), 28, 28, 1))
     x_test = x_test.astype('float32') / 255
 
     # Preprocessing the Labels
-    y_train = to_categorical(y_train, num_classes=10)
-    y_test = to_categorical(y_test, num_classes=10)
+    y_train = to_categorical(y_train, num_classes=9)
+    y_test = to_categorical(y_test, num_classes=9)
 
     # Validation Split
     val_x_train = x_train[:VALIDATION_DATA_COUNT]
@@ -138,7 +161,10 @@ def load_dataset(dataset_path):
 
 if __name__ == '__main__':
 
-    dataset_path = r'KerasDigitRecognition/data/mnist_dataset.npz'
-    model_path = r'KerasDigitRecognition/models/model_01.h5'
+    # dataset_path = r'KerasDigitRecognition/data/ocr_dataset.npz'
+    dataset_path = r'KerasDigitRecognition/data/mnist_dataset_without_zero.npz'
 
-    learn_model(dataset_path, model_path, train_from_scratch=True)
+    load_model_path = r'KerasDigitRecognition/models/model_with_ocr_data.h5'
+    save_model_path = r'KerasDigitRecognition/models/model_pokus.h5'
+
+    learn_model(dataset_path, load_model_path, train_from_scratch=False, save_model_path=save_model_path)
