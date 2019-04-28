@@ -1,3 +1,9 @@
+'''
+Digit recognition based on tesseract - very slow (cca 200ms per digit)
+Digit detection using contours - some digit contours are broken and are not detected
+'''
+
+
 import cv2
 import yaml
 

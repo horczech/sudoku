@@ -8,7 +8,6 @@ class CellClassifier(metaclass=ABCMeta):
         self.config = config
 
         self.blur_kernel = tuple(config['blur_kernel'])
-        self.blur_sigma = config['blur_sigma']
 
         self.thresh_adaptiveMethod = getattr(cv2, config['thresh_adaptiveMethod'])
         self.thresh_blockSize = config['thresh_blockSize']
@@ -30,15 +29,13 @@ class CellClassifier(metaclass=ABCMeta):
         pass
 
     def preprocess_image(self, gray_img, is_debugging_mode=False):
-        blur_img = cv2.GaussianBlur(gray_img,
-                                          ksize=self.blur_kernel,
-                                          sigmaX=self.blur_sigma)
+        blur_img = cv2.GaussianBlur(gray_img, ksize=self.blur_kernel, sigmaX=0)
         thresholded_img = cv2.adaptiveThreshold(blur_img,
-                                                      maxValue=255,
-                                                      adaptiveMethod=self.thresh_adaptiveMethod,
-                                                      thresholdType=cv2.THRESH_BINARY_INV,
-                                                      blockSize=self.thresh_blockSize,
-                                                      C=self.thresh_C)
+                                                  maxValue=255,
+                                                  adaptiveMethod=self.thresh_adaptiveMethod,
+                                                  thresholdType=cv2.THRESH_BINARY_INV,
+                                                  blockSize=self.thresh_blockSize,
+                                                  C=self.thresh_C)
 
         opening_kernel = np.ones((3, 3), np.uint8)
         morph_img = cv2.morphologyEx(thresholded_img, cv2.MORPH_OPEN, opening_kernel)

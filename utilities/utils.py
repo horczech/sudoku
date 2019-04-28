@@ -96,3 +96,26 @@ def draw_probabilistic_lines(lines, image, color=(255, 0, 0), line_thickness=3):
         cv2.line(img, (x1, y1), (x2, y2), color, line_thickness)
 
     return img
+
+def convert_idx_to_row_col_pos(idx):
+    '''
+    Sudoku grid can be indexed as row and col both in range 0-9 OR as single index from 0-80
+    This function does conversion from single index to row and col format
+    :param idx: number between 0 and 80
+    :return: (row, col)
+    '''
+
+    row = int(idx / 9)
+    col = int(idx % 9)
+
+    return (row, col)
+
+
+def convert_row_col_pos_to_idx(row, col):
+
+
+    idx = row * 9 + col
+
+    return idx
+
+

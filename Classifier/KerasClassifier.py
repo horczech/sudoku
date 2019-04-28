@@ -14,8 +14,8 @@ class KerasClassifier(CellClassifier):
     def __init__(self, config):
         super().__init__(config)
 
-        # ToDo: Put somewhere else
-        self.model = models.load_model(r'KerasDigitRecognition/models/model_with_ocr_data.h5')
+        self.model = models.load_model(config['model_path'])
+
 
     def classify_cells(self, cropped_sudoku_img, is_debugging_mode=False):
         binary_img = self.preprocess_image(cropped_sudoku_img, is_debugging_mode=is_debugging_mode)
@@ -62,6 +62,10 @@ class KerasClassifier(CellClassifier):
 
             digit_img = binary_img[top_left_pt[1]:bottom_right_pt[1], top_left_pt[0]:bottom_right_pt[0]]
             digit_img = cv2.resize(digit_img, (28, 28))
+            #
+            # cv2.imshow('digit', digit_img)
+            # cv2.waitKey()
+
             digit_img = digit_img.astype('float32') / 255
 
             digit_list[idx, :, :, 0] = digit_img

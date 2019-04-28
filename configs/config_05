@@ -1,0 +1,64 @@
+
+grid_finder:
+# --- image preprocessing
+    resized_img_shape: [800, 800]
+    blur_kernel: 5 # must be odd
+
+
+    # Two possible methods ADAPTIVE_THRESH_MEAN_C or ADAPTIVE_THRESH_GAUSSIAN_C
+    thresh_adaptiveMethod : ADAPTIVE_THRESH_MEAN_C
+    thresh_blockSize : 11  # must be odd number
+    thresh_C : 2
+
+    morph_transf_ksize: [5, 5]
+
+
+# --- grid detection and transformation
+    #contour approximation (epsilon is maximum distance from contour to approximated contour)
+    epsilon: 0.1
+
+    # length of square edge
+    output_grid_size : 500
+
+    # contour area threshold in percentage of the whole image
+    contour_area_threshold: 0.1
+
+    # angle deviation of horizontal and vertical line in deg
+    angle_deviation_deg: 5
+
+    # threshold for detected lines in sudoku
+    line_theshold_count: 5
+
+
+digit_classifier:
+
+# --- image preprocessing
+    blur_kernel : [5, 5]  # must be odd number
+    blur_sigma : 0
+
+    # Two possible methods ADAPTIVE_THRESH_MEAN_C or ADAPTIVE_THRESH_GAUSSIAN_C
+    thresh_adaptiveMethod : ADAPTIVE_THRESH_GAUSSIAN_C
+    thresh_blockSize : 15  # must be odd number
+    thresh_C : 3
+
+    # filtering of horizontal and vertical lines
+    shorter_side_px: 1
+    longer_side_factor: 9 # the input image size will be divided by this number to get longer side of the kernel
+
+    # filtering contours that does not contain digit
+    aspect_ratio_range : [0.2, 0.9]
+    min_digit_area : 100  # ToDo: Absolute value is not optimal
+
+    # the space around the digit
+    digit_padding : 5
+
+    # ratio of white and black pixels to decide whether the cell is full or empty
+    cell_pixel_ration: 0.05
+
+    # Percentacge of the cell size.
+    # To detect empty cell I check the center of the contour. if there is no contour with center that is out of dead
+    # zone the cell is considered empty
+    cell_dead_zone: 0.15
+
+
+

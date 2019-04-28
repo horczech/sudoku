@@ -21,11 +21,11 @@ class GridFinder(metaclass=ABCMeta):
         median_blur_1_img = cv2.medianBlur(gray_img, self.median_ksize)
 
         thresholded_img = cv2.adaptiveThreshold(median_blur_1_img,
-                                                      maxValue=255,
-                                                      adaptiveMethod=self.thresh_adaptiveMethod,
-                                                      thresholdType=cv2.THRESH_BINARY_INV,
-                                                      blockSize=self.thresh_blockSize,
-                                                      C=self.thresh_C)
+                                                  maxValue=255,
+                                                  adaptiveMethod=self.thresh_adaptiveMethod,
+                                                  thresholdType=cv2.THRESH_BINARY_INV,
+                                                  blockSize=self.thresh_blockSize,
+                                                  C=self.thresh_C)
 
         median_blur_2_img = cv2.medianBlur(thresholded_img, self.median_ksize)
 

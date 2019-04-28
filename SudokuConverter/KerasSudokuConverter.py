@@ -1,3 +1,10 @@
+'''
+Digit recognition based on CNN and Keras - very fast cca 100ms per all digits (whole batch is processed at once)
+Digit detection using contours - some digit contours are broken and are not detected
+    - ToDo: Possible sollutions: better image binarization or connect bounary boxes of close broken contours
+
+'''
+
 import cv2
 import yaml
 from GridFinder.ContourGridFinder import ContourGridFinder
@@ -13,7 +20,7 @@ def convert(image_path, config_path):
     digit_classificator = KerasClassifier(config['digit_classifier'])
 
     cropped_sudoku_img = grid_finder.cut_sudoku_grid(sudoku_img, is_debug_mode=False)
-    digital_sudoku = digit_classificator.classify_cells(cropped_sudoku_img)
+    digital_sudoku = digit_classificator.classify_cells(cropped_sudoku_img, is_debugging_mode=False)
 
     print(digital_sudoku)
 

@@ -63,18 +63,19 @@ def evaluate(evaluated_method, evaluation_data_path, config_path):
     all_true = []
     failed_evaluation_count = 0
     for count, data in enumerate(data_array):
-        print(f'\n>>> Test No.{count}/{len(data_array)}')
+        print(f'\n>>>>>> Test No.{count}/{len(data_array)}')
+        print(f'Image name: {data.image_name}')
+
         try:
             predicted = evaluated_method(data.img_path, config_path)
 
-            print('\n_______________OK___________________')
-            print(f'Image name: {data.image_name}')
-            print_accuracy(data.true, predicted.values)
+            print('\nRESULT: OK')
+            print_accuracy(data.true, predicted.cell_values)
 
-            all_predicted.append(predicted.values)
+            all_predicted.append(predicted.cell_values)
             all_true.append(data.true)
         except Exception as e:
-            print('\n_______________FAIL___________________')
+            print('\nRESULT: FAIL')
             print(f'Failed Image name: {data.image_name}')
             print('Exception message:')
             print(e)
@@ -104,9 +105,10 @@ def print_accuracy(true, pred):
 
 if __name__ == '__main__':
     from SudokuConverter.KerasSudokuConverter import convert
+    # from SudokuConverter.UpdatedConverter import convert
+    from SudokuConverter.HoughLineSudokuConverter import  convert
 
-    evaluation_data_path = r'sudoku_imgs/easy_dataset'
-    evaluation_data_path = r'sudoku_imgs/annotated_test_imgs'
-    config_path = r'configs/config_03'
+    evaluation_data_path = r'sudoku_imgs/standard_imgs'
+    config_path = r'configs/config_06'
 
     evaluate(convert, evaluation_data_path, config_path)
