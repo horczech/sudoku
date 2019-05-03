@@ -12,6 +12,9 @@ grid_finder:
 
     morph_transf_ksize: [5, 5]
 
+    grid_padding: 0
+
+
 
 # --- grid detection and transformation
     #contour approximation (epsilon is maximum distance from contour to approximated contour)

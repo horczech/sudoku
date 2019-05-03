@@ -98,9 +98,13 @@ def evaluate(evaluated_method, evaluation_data_path, config_path):
 def print_accuracy(true, pred):
     full_cell_idx = np.argwhere(true != EMPTY_CELL_VALUE)
     empty_cell_idx = np.argwhere(true == EMPTY_CELL_VALUE)
+
+    # undetected_full_cells_count = true[true != EMPTY_CELL_VALUE].size - pred[pred != EMPTY_CELL_VALUE].size
+
     print(f'    Accuracy - all cells: {accuracy_score(true, pred):.2}')
     print(f'    Accuracy - full cells: {accuracy_score(true[full_cell_idx], pred[full_cell_idx]):.2}')
     print(f'    Accuracy - empty cells: {accuracy_score(true[empty_cell_idx], pred[empty_cell_idx]):.2}')
+    # print(f'    Full cell count - Detected cell count = {undetected_full_cells_count}')
 
 
 if __name__ == '__main__':

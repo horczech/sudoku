@@ -133,28 +133,64 @@ class HoughLineClassifier:
 
         digit_imgs = []
         cell_idxs = []
+
+
+        # ToDo: move to config
+        cell_padding_ratio = 0.2
+        variance_threshold = 70
+
+
         for cell_idx, cell_coordinate in enumerate(cell_coordinates_array):
-            cropped_cell = img[cell_coordinate.y_min:cell_coordinate.y_max, cell_coordinate.x_min:cell_coordinate.x_max]
+            cell_size = max(cell_coordinate.y_max - cell_coordinate.y_min, cell_coordinate.x_max - cell_coordinate.x_min)
+            cell_padding = int(cell_size*cell_padding_ratio)
 
-            # ToDo: Try image normalization and set thresholdig by hand to middlerange
-            blur = cv2.GaussianBlur(cropped_cell, (3, 3), 0)
-            _, binary_cell_img = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+            y_min = max(0, cell_coordinate.y_min)
+            y_max = min(img.shape[0]-1, cell_coordinate.y_max)
+            x_min = max(0, cell_coordinate.x_min)
+            x_max = min(img.shape[1]-1, cell_coordinate.x_max)
 
-            filtered_cell_img = self.remove_grid_lines(binary_cell_img)
+            cropped_cell_center = img[y_min+cell_padding:y_max-cell_padding, x_min+cell_padding:x_max-cell_padding]
+            blured_cell_center = cv2.GaussianBlur(cropped_cell_center, (3, 3), 0)
+
+            cell_center_variance = np.var(blured_cell_center)
+            if cell_center_variance < variance_threshold:
+                if is_debug_mode:
+                    print(f'variance of cell: {cell_center_variance}')
+
+                filtered_cell_img = None
+            else:
+                cropped_cell = img[y_min:y_max, x_min:x_max]
+
+                blur = cv2.GaussianBlur(cropped_cell, (3, 3), 0)
+                threshold_val, _ = cv2.threshold(blured_cell_center, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+                _, binary_cell_img = cv2.threshold(blur, threshold_val, 255, cv2.THRESH_BINARY_INV)
+
+                filtered_cell_img = self.remove_grid_lines(binary_cell_img)
+
+                if is_debug_mode:
+                    cv2.imshow('cropped_cell', cropped_cell)
+                    cv2.imshow('th3', binary_cell_img)
+                    cv2.imshow('filtered_img', filtered_cell_img)
+
+
 
             if self.is_full_cell(filtered_cell_img, is_debug_mode):
-                digit_imgs.append(binary_cell_img)
+                digit_imgs.append(filtered_cell_img)
                 cell_idxs.append(cell_idx)
 
             if is_debug_mode:
-                cv2.imshow('cropped_cell', cropped_cell)
-                cv2.imshow('th3', binary_cell_img)
-                cv2.imshow('filtered_img', filtered_cell_img)
+                cv2.imshow('Cropped center', blured_cell_center)
                 cv2.waitKey()
 
         return digit_imgs, cell_idxs
 
     def is_full_cell(self, binary_cell_img, is_debug_mode):
+        if binary_cell_img is None:
+            if is_debug_mode:
+                print('>>> DEFINITELY EMPTY - The variance is lower than threshold')
+            return False
+
+
         nb_components, _, stats, centroids = cv2.connectedComponentsWithStats(binary_cell_img, connectivity=8)
 
         if is_debug_mode:
@@ -279,10 +315,8 @@ class HoughLineClassifier:
         lines = np.squeeze(cv2.HoughLines(binary_img, 1, np.pi / 180, self.hough_line_threshold))
         horizontal_lines, vertical_lines = self.get_horizontal_and_vertical_lines(lines)
 
-        horizontal_lines_merged = self.merge_close_lines(horizontal_lines, threshold=binary_img.shape[1] / 27,
-                                                         default_angle_rad=np.pi / 2)
-        vertical_lines_merged = self.merge_close_lines(vertical_lines, threshold=binary_img.shape[0] / 27,
-                                                       default_angle_rad=0)
+        horizontal_lines_merged = self.merge_close_lines(horizontal_lines, threshold=binary_img.shape[1] / 27)
+        vertical_lines_merged = self.merge_close_lines(vertical_lines, threshold=binary_img.shape[0] / 27)
 
         if not is_debugging_mode and (len(horizontal_lines_merged) < 10 or len(vertical_lines_merged) < 10):
             raise ValueError(f'SUDOKU grid was not detected. Number of horizontal lines: {len(horizontal_lines_merged)}. Number of vertical lines: {len(vertical_lines_merged)}')
@@ -411,8 +445,7 @@ class HoughLineClassifier:
         else:
             return False
 
-    def merge_close_lines(self, lines, threshold, default_angle_rad):
-        # ToDo:  default_angle_rad is bullshit approach
+    def merge_close_lines(self, lines, threshold):
         lines = np.asarray(lines)
 
         distances = np.reshape(np.abs(lines[:, 0]), (len(lines), 1))
@@ -421,10 +454,14 @@ class HoughLineClassifier:
 
         merged_lines = []
         for cluster_id in range(0, clusters.max() + 1):
-            lines_to_merge = np.abs(lines[clusters == cluster_id])
-            mean_rho = np.mean(lines_to_merge[:, 0])
+            lines_to_merge = np.asarray(lines[clusters == cluster_id])
+            idxs = np.array(range(0, lines_to_merge.shape[0]))
 
-            merged_lines.append([mean_rho, default_angle_rad])
+            res = np.argsort(np.abs(lines_to_merge[:, 0]))
+            sorted_lines = lines_to_merge[res]
+            sorted_idxs = idxs[res]
+
+            merged_lines.append(lines_to_merge[sorted_idxs[int(lines_to_merge.shape[0]/2)], :])
 
         return merged_lines
 

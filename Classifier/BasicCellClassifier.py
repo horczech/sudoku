@@ -72,7 +72,7 @@ class BasicDigitRecogniser(CellClassifier):
 
             classified_digits.append(classified_digit)
 
-        return Sudoku.from_digit_and_idx(classified_digits, grid_indexes)
+        return Sudoku.from_digit_and_cell_idx(classified_digits, grid_indexes)
 
     def classify_digit(self, digit_img):
         try:
@@ -90,8 +90,7 @@ if __name__ == '__main__':
     from GridFinder.ContourGridFinder import ContourGridFinder
 
     img_format = r'.jpg'
-    folder_path = r'sudoku_imgs/easy_dataset'
-    # folder_path = r'sudoku_imgs/annotated_test_imgs'
+    folder_path = r'sudoku_imgs/standard_imgs'
 
     config_path = r'configs/config_03'
 
@@ -109,7 +108,7 @@ if __name__ == '__main__':
     for img_path in img_path_list:
         print(img_path)
 
-        cropped_sudoku_img = grid_finder.cut_sudoku_grid(cv2.imread(img_path, cv2.IMREAD_GRAYSCALE))
+        cropped_sudoku_img,_ = grid_finder.cut_sudoku_grid(cv2.imread(img_path, cv2.IMREAD_GRAYSCALE))
         digital_sudoku = cell_classifier.classify_cells(cropped_sudoku_img, is_debugging_mode=True)
 
         print(digital_sudoku)

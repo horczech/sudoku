@@ -50,7 +50,7 @@ digit_classifier:
     # cell detection and filtration
     hough_line_threshold: 350
     angle_deviation_deg: 5
-    cell_dead_zone: 0.1
+    cell_dead_zone: 0.05
     blob_center_distance_threshold: 0.3
     min_white_px_cell_ratio: 0.08
     aspect_ratio_range : [0.2, 0.9]

@@ -20,18 +20,20 @@ def convert(image_path, config_path):
     cropped_sudoku_img, transforamtion_matrix = grid_finder.cut_sudoku_grid(sudoku_img, is_debug_mode=False)
     digital_sudoku = digit_classificator.classify_cells(cropped_sudoku_img, is_debugging_mode=False)
 
+    # # cv2.imshow("Cropped Sudoku Result", digital_sudoku.draw_result(cropped_sudoku_img))
+    # cv2.imshow("Cropped Sudoku Result", digital_sudoku.draw_full_result(sudoku_img, transforamtion_matrix))
+    # cv2.waitKey()
+
     return digital_sudoku
 
 
 if __name__ == '__main__':
-    image_path = r'sudoku_imgs/standard_imgs/image109.jpg'
+    image_path = r'sudoku_imgs/standard_imgs/4.jpg'
     config_path = r'configs/config_06'
 
     sudoku = convert(image_path, config_path)
 
-    print(sudoku)
+    # print(sudoku)
 
-    # cv2.imshow("Cropped Sudoku Result", digital_sudoku.draw_result(cropped_sudoku_img))
-    # cv2.imshow("Cropped Sudoku Result", digital_sudoku.draw_full_result(sudoku_img, transforamtion_matrix))
-    # cv2.waitKey()
+
 

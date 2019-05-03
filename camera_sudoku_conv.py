@@ -31,7 +31,6 @@ def run():
 
             result_img = digital_sudoku.draw_full_result(frame, transforamtion_matrix)
 
-
             # Display the resulting frame
             cv2.imshow('frame', result_img)
 
