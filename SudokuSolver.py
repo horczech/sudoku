@@ -20,6 +20,10 @@ def solve_sudoku(sudoku_img, grid_finder, digit_classificator):
 
     solved_sudoku = parse_output(solver_result)
 
+    if solved_sudoku is None:
+        print(">>> Sollution not found")
+        solved_sudoku = input_sudoku
+
     solved_sudoku.set_cropped_cell_bboxes(input_sudoku.cropped_cell_coordinates)
     solved_sudoku.set_transformation_matrix(input_sudoku.transformation_matrix)
     solved_sudoku.set_cropped_sudoku_grid_img(input_sudoku.cropped_sudoku_grid_img)
@@ -35,7 +39,7 @@ def solver(parsed_sudoku):
 
 if __name__ == '__main__':
     # image_path = r'sudoku_imgs/standard_imgs/4.jpg'
-    image_path = r'sudoku_imgs/phone/webcam_clean_4.jpg'
+    image_path = r'sudoku_imgs/phone/web_cam_font2_2.jpg'
     image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
 
     config_path = r'configs/config_07'
@@ -51,8 +55,8 @@ if __name__ == '__main__':
         # Draw result
         solved_sudoku.draw_cropped_result()
 
-        # result_img = solved_sudoku.draw_full_result(image)
-        # cv2.imshow('frame', result_img)
+        result_img = solved_sudoku.draw_full_result(image)
+        cv2.imshow('frame', result_img)
 
         print(solved_sudoku)
 
