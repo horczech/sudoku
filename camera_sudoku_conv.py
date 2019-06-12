@@ -7,7 +7,7 @@ from Classifier.HoughLineClassifier import HoughLineClassifier
 
 def run():
 
-    config_path = r'configs/config_06'
+    config_path = r'configs/config_07'
 
     with open(config_path, 'r') as ymlfile:
         config = yaml.load(ymlfile, Loader=yaml.Loader)
@@ -29,7 +29,8 @@ def run():
             cropped_sudoku_img, transforamtion_matrix = grid_finder.cut_sudoku_grid(frame, is_debug_mode=False)
             digital_sudoku = digit_classificator.classify_cells(cropped_sudoku_img, is_debugging_mode=False)
 
-            result_img = digital_sudoku.draw_full_result(frame, transforamtion_matrix)
+            digital_sudoku.set_transformation_matrix(transforamtion_matrix)
+            result_img = digital_sudoku.draw_full_result(frame)
 
             # Display the resulting frame
             cv2.imshow('frame', result_img)

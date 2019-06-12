@@ -65,7 +65,8 @@ class GridFinder(metaclass=ABCMeta):
         fx = self.resized_img_shape[1]/img.shape[1]
         fy = self.resized_img_shape[0]/img.shape[0]
 
-        resized_img = cv2.resize(img, self.resized_img_shape)
+        # resized_img = cv2.resize(img, self.resized_img_shape)
+        resized_img = cv2.resize(img, (0,0), fx=fx, fy=fy)
 
         return resized_img, fx, fy
 

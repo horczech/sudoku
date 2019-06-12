@@ -24,6 +24,10 @@ class ContourGridFinder(GridFinder):
             gray_img = self.convert_to_grayscale(sudoku_img)
             resized_gray_img, fx, fy = self.resize_img(gray_img)
 
+            # cv2.imshow('original_img', gray_img)
+            # cv2.imshow('resized_gray_img', resized_gray_img)
+            # cv2.waitKey()
+
             binary_img = self.preprocess_image(resized_gray_img, is_debug_mode=is_debug_mode)
 
             grid_corners, grid_contour = self.find_grid_corners(binary_img)
@@ -33,7 +37,8 @@ class ContourGridFinder(GridFinder):
         except Exception as e:
             # ToDo: exception handeling should be done at the top level of app
             print(f'>>> FAILED TO DETECT THE GRID: {str(e)}')
-            return None
+
+            raise ValueError('Grid not detected')
 
         if is_debug_mode:
             self.visualize_steps(input_img=gray_img,
@@ -105,6 +110,9 @@ class ContourGridFinder(GridFinder):
                                       [self.output_grid_size, self.output_grid_size],
                                       [0, self.output_grid_size]],
                                      dtype=np.float32)
+
+
+
 
         if grid_padding is not None:
             sudoku_corners[0] = sudoku_corners[0] + np.array([-grid_padding, -grid_padding])

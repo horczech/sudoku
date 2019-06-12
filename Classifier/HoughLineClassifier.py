@@ -29,6 +29,7 @@ class HoughLineClassifier:
         self.min_white_px_cell_ratio = config['min_white_px_cell_ratio']
         self.min_contour_area = config['min_contour_area']
 
+    @timeit
     def classify_cells(self, cropped_sudoku_img, is_debugging_mode=False):
 
         binary_img = self.preprocess_image(cropped_sudoku_img, is_debugging_mode=is_debugging_mode)
@@ -62,7 +63,7 @@ class HoughLineClassifier:
 
         return sudoku
 
-    @timeit
+    # @timeit
     def clasiffy_digits(self, digit_imgs, cell_idxs):
 
         digit_list = np.empty((len(digit_imgs), 28, 28, 1))

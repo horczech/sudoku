@@ -5,14 +5,22 @@ import cv2
 class Sudoku:
     def __init__(self, cell_values):
         self.cell_values = np.asarray(cell_values, dtype=int)
-
         self.cropped_cell_coordinates = None
+        self.transformation_matrix = None
+        self.cropped_sudoku_grid_img = None
+
+    def set_transformation_matrix(self, transformation_matrix):
+        self.transformation_matrix = transformation_matrix
 
     def set_cropped_cell_bboxes(self, cell_bboxes):
         if len(cell_bboxes) != 81:
             raise ValueError('The size of cell bboxes array should be 81')
 
         self.cropped_cell_coordinates = np.asarray(cell_bboxes, dtype=int)
+
+    def set_cropped_sudoku_grid_img(self, cropped_sudoku_grid_img):
+        self.cropped_sudoku_grid_img = cropped_sudoku_grid_img
+
 
     @classmethod
     def from_digit_and_cell_idx(cls, digits, cell_idxs):
@@ -45,36 +53,32 @@ class Sudoku:
         # replace empty cells with dots and wrongly classified digits to 'x'
         sudoku_array = self.cell_values.astype(str)
 
-        sudoku_array[sudoku_array == str(EMPTY_CELL_VALUE)] = '.'
-        sudoku_array[sudoku_array == str(ERROR_VALUE)] = 'x'
+        sudoku_array[sudoku_array == str(EMPTY_CELL_VALUE)] = '_'
+        sudoku_array[sudoku_array == str(ERROR_VALUE)] = '_'
 
-        # First part. Adds pipes and hyphens to inputted string to seperate boxes in the grid.
-        old = list(sudoku_array)
-        new = []
-        count = 1
-        for one in old:
-            new.append(one)
-            if count % 3 == 0 and count % 9 != 0:
-                new.append('|')
-            if count % 27 == 0 and count < 81:
-                [new.append('-') for i in range(1, 12)]
-            count += 1
+        sudoku_string = ''
 
-        sudoku_array = ''.join(new)
+        sudoku_string += '+-------+-------+-------+\n|'
+        for cell_id, sudoku_cell in enumerate(sudoku_array):
+            cell_id = cell_id + 1
+            divider_line_idxs = [27, 54, 81]
 
-        # Second part. Prints out a nice grid from the result above.
-        row = []
-        col = 0
-        output_string = ''
-        for one in sudoku_array:
-            row.append(one + ' ')
-            col += 1
-            if col == 11:
-                output_string += ''.join(row) + '\n'
-                col = 0
-                row = []
+            sudoku_string += ' ' + str(sudoku_cell)
 
-        return (output_string)
+            if cell_id % 3 == 0:
+                sudoku_string += ' |'
+
+
+            if cell_id in divider_line_idxs:
+                sudoku_string += '\n+-------+-------+-------+'
+                if cell_id != 81:
+                    sudoku_string += '\n|'
+
+
+            if cell_id % 3 == 0 and cell_id % 9 == 0 and cell_id not in divider_line_idxs:
+                sudoku_string += '\n|'
+
+        return (sudoku_string)
 
 
     def draw_result(self, image):
@@ -94,14 +98,20 @@ class Sudoku:
 
         return image
 
-    def draw_full_result(self, image, transformation_matrix):
+    def draw_full_result(self, image):
+        if self.transformation_matrix is None:
+            raise ValueError("Transformation matrix is not set.")
+
+        if len(image.shape) == 2:
+            image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+
         height, width, _ = image.shape
 
         empty_img = np.zeros((500, 500), dtype=np.uint8)
 
         cropped_img_result = self.draw_result(empty_img)
 
-        cropped_img_result = cv2.warpPerspective(cropped_img_result, transformation_matrix, (width, height), flags=cv2.WARP_INVERSE_MAP)
+        cropped_img_result = cv2.warpPerspective(cropped_img_result, self.transformation_matrix, (width, height), flags=cv2.WARP_INVERSE_MAP)
 
 
         mask = np.max(cropped_img_result, axis=2).astype(dtype=np.uint8)
@@ -112,4 +122,41 @@ class Sudoku:
         result = cv2.bitwise_or(foreground, background)
 
         return result
+
+    def draw_cropped_result(self):
+        if self.transformation_matrix is None:
+            raise ValueError("Transformation matrix is not set.")
+        cropped_img = self.cropped_sudoku_grid_img
+        if len(cropped_img.shape) == 2:
+            cropped_img = cv2.cvtColor(cropped_img, cv2.COLOR_GRAY2BGR)
+
+        empty_img = np.zeros(self.cropped_sudoku_grid_img.shape, dtype=np.uint8)
+
+        cropped_img_result = self.draw_result(empty_img)
+
+        mask = np.max(cropped_img_result, axis=2).astype(dtype=np.uint8)
+        foreground = cv2.bitwise_or(cropped_img_result, cropped_img_result, mask=mask)
+        mask = cv2.bitwise_not(mask)
+        background = cv2.bitwise_or(cropped_img, cropped_img, mask=mask)
+
+        result = cv2.bitwise_or(foreground, background)
+
+        return result
+
+    def convert_nativ_to_dense(self, N, i, j, n):
+        n = N ** 2 * (i - 1) + N * (j - 1) + (n - 1) + 1
+        return str(n) + " "
+
+    def parse_sudoku(self):
+        output_string = ''
+
+        sudoku = np.reshape(self.cell_values, (9, 9))
+
+        for row_id, row in enumerate(sudoku):
+            for col_id, digit in enumerate(row):
+                if digit != EMPTY_CELL_VALUE and digit != ERROR_VALUE:
+                    output_string += str(self.convert_nativ_to_dense(SUDOKU_GRID_SIZE, row_id+1, col_id+1, digit)) + "0\n"
+
+        return output_string
+
 

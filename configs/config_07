@@ -1,0 +1,60 @@
+
+grid_finder:
+# --- image preprocessing
+    resized_img_shape: [720, 1080]
+    blur_kernel: 3 # must be odd
+
+
+    # Two possible methods ADAPTIVE_THRESH_MEAN_C or ADAPTIVE_THRESH_GAUSSIAN_C
+    thresh_adaptiveMethod : ADAPTIVE_THRESH_MEAN_C
+    thresh_blockSize : 11  # must be odd number
+    thresh_C : 2
+
+    morph_transf_ksize: [5, 5]
+
+
+# --- grid detection and transformation
+    #contour approximation (epsilon is maximum distance from contour to approximated contour)
+    epsilon: 0.1
+
+    # length of square edge
+    output_grid_size : 500
+
+    # contour area threshold in percentage of the whole image
+    contour_area_threshold: 0.1
+
+    # angle deviation of horizontal and vertical line in deg
+    angle_deviation_deg: 5
+
+    # threshold for detected lines in sudoku
+    line_theshold_count: 5
+
+    # sudoku grid padding - adds padding to found soduku ROI in order to make sure that the most outer line of the sudoku will be present on the image
+    grid_padding: 10
+
+
+digit_classifier:
+    # classificator model path
+    model_path: KerasDigitRecognition/models/model_with_ocr_data.h5
+
+    # image preprocessing
+    blur_kernel: [3, 3]
+    morph_transf_ksize: [3, 3]
+    thresh_adaptiveMethod : ADAPTIVE_THRESH_GAUSSIAN_C  # Two possible methods ADAPTIVE_THRESH_MEAN_C or ADAPTIVE_THRESH_GAUSSIAN_C
+    thresh_blockSize : 15  # must be odd number
+    thresh_C : 3
+    min_contour_area: 30
+
+
+
+    # cell detection and filtration
+    hough_line_threshold: 350
+    angle_deviation_deg: 5
+    cell_dead_zone: 0.05
+    blob_center_distance_threshold: 0.3
+    min_white_px_cell_ratio: 0.08
+    aspect_ratio_range : [0.2, 0.9]
+
+
+
+
