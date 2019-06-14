@@ -2,31 +2,32 @@
 Converts image of SUDOKU into digital form
 
 
- - Using Python 3.7.2 and OpenCV 3.4.2
+ - Using Python 3.6.8 and OpenCV 4.1.0
  
+ ## How to install:
+  
+   - Install  [Anaconda](https://www.anaconda.com/distribution/)
+   
+   - Clone this repository ```git clone https://github.com/horczech/sudoku.git```
+   
+   - Install the virtual environment from ```enviroment.yml``` file located in the root directory of the 
+   repository using ```conda env create -f environment.yml``` 
+   
+   - Activate the virtual enviroment ```conda activate sudoku_env```
+  
  ## How to use:
-   - Use the ```enviroment.yml``` to create virtual environment using the conda's command 
-   ```conda env create -f environment.yml```  
-   - Run from the commmand line with the image as the only mandatory argument
-    ```python3 main.py sudoku_imgs/unannotated_imgs/2.jpg```
-   - Create own config file and pass it's path via optional argument (the name of the config file MUST be ```config.py```
-   ```python3 main.py sudoku_imgs/unannotated_imgs/2.jpg --config configs/config_1/config.py```
+  
+   - There are two scripts that can be used from command line. 
    
-   - Run the pytest in the ```tests/``` directory. Each step will visualize individual steps during the image processing
-   
-   - Parameters of the algorithm can be tuned in the config file located in ```configs/config_1/config.py```
-    
- 
- ## ToDo:
-  - [ ] Tune the parameters and make the algorithm more robust
-  - [ ] Find out why the OCR has problem with some numbers (e.g. 1)
-  - [ ] Make the algorithm faster (currently it takes 9sec on my PC)
-  - [ ] Collect more test images with annotations and make real tests
-  - [ ] Find better way how to load config file
+     1  ```sudoku_solver.py``` that accepts SUDOKU image and returns image with solved SUDOKU and text version of 
+   solution. ```python3 sudoku_solver.py sudoku_imgs/web_cam/webcam_clean_1.jpg``` There is also optional 
+   parameter ```--config``` where you can specify parameters of the algorithm. The example config files can be found 
+   in ```/configs/``` directory. ```python3 sudoku_solver.py sudoku_imgs/web_cam/webcam_clean_1.jpg --config configs/config_07```
+     2 ```camera_sudoku_solver.py``` This script has no input arguments it just finds and solves soduku from the 
+     camera stream. By pressing "F" key on the keyboard it will freeze the surrent frame from camera and by pressing 
+     "R" key it will return to the camera stream. By pressing "P" key it will wait till it finds valid solution of the 
+     SUDOKU and prints image with the solution and text version of solution. Run it using ```python3 camera_sudoku_solver.py ```
 
-
- ## Ideas:
-  - The OCR model can be trained on font that will be used in praxis 
 
 
  ## Sources:

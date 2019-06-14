@@ -6,6 +6,7 @@ from Classifier.HoughLineClassifier import HoughLineClassifier
 import subprocess
 from utilities.parse_output import parse_output
 from utilities.utils import timeit
+import argparse
 
 
 def solve_sudoku(sudoku_img, grid_finder, digit_classificator):
@@ -38,11 +39,27 @@ def solver(parsed_sudoku):
     return solver_result
 
 if __name__ == '__main__':
-    # image_path = r'sudoku_imgs/standard_imgs/4.jpg'
-    image_path = r'sudoku_imgs/phone/web_cam_font2_2.jpg'
+
+    parser = argparse.ArgumentParser(description='Sudoku Solver')
+
+    parser.add_argument('img', type=str, help='Path to image')
+    parser.add_argument('-c','--config', type=str, help='Path to config file')
+
+    args = parser.parse_args()
+
+    if args.config is None:
+        args.config = r'configs/config_07'
+
+
+    image_path, config_path = args.img, args.config
+
+
+    # image_path = r'sudoku_imgs/web_cam/webcam_clean_1.jpg'
+    # config_path = r'configs/config_07'
+
+
     image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
 
-    config_path = r'configs/config_07'
     with open(config_path, 'r') as ymlfile:
         config = yaml.load(ymlfile, Loader=yaml.Loader)
 
@@ -61,6 +78,7 @@ if __name__ == '__main__':
         print(solved_sudoku)
 
         cv2.waitKey()
+        cv2.destroyAllWindows()
 
 
     except Exception as e:

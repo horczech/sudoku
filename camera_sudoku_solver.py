@@ -65,7 +65,7 @@ def run():
         if pressed_key & 0xFF == ord('q'):
             # Q - QUIT
             break
-        elif pressed_key & 0xFF == ord('s'):
+        elif pressed_key & 0xFF == ord('f'):
             # P - PAUSE
             is_paused = True
         elif pressed_key & 0xFF == ord('r'):

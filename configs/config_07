@@ -1,7 +1,7 @@
 
 grid_finder:
 # --- image preprocessing
-    resized_img_shape: [720, 1080]
+    resized_img_shape: [504, 756]
     blur_kernel: 3 # must be odd
 
 
