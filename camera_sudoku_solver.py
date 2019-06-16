@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 import yaml
-from SudokuSolver import solver, solve_sudoku
+from sudoku_solver import solver, solve_sudoku
 from utilities.parse_output import parse_output
 from SudokuConverter.SudokuConverter import sudoku_img_to_string
 
