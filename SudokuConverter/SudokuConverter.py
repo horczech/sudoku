@@ -24,7 +24,7 @@ if __name__ == '__main__':
     image_path = r'sudoku_imgs/standard_imgs/4.jpg'
     image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
 
-    config_path = r'configs/config_06'
+    config_path = r'configs/config_07'
     with open(config_path, 'r') as ymlfile:
         config = yaml.load(ymlfile, Loader=yaml.Loader)
 

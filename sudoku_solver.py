@@ -28,6 +28,7 @@ def solve_sudoku(sudoku_img, grid_finder, digit_classificator):
     solved_sudoku.set_cropped_cell_bboxes(input_sudoku.cropped_cell_coordinates)
     solved_sudoku.set_transformation_matrix(input_sudoku.transformation_matrix)
     solved_sudoku.set_cropped_sudoku_grid_img(input_sudoku.cropped_sudoku_grid_img)
+    solved_sudoku.set_is_solution_value(input_sudoku)
 
     return solved_sudoku, input_sudoku
 
@@ -58,7 +59,7 @@ if __name__ == '__main__':
     # config_path = r'configs/config_07'
 
 
-    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    image = cv2.imread(image_path)
 
     with open(config_path, 'r') as ymlfile:
         config = yaml.load(ymlfile, Loader=yaml.Loader)
@@ -73,7 +74,11 @@ if __name__ == '__main__':
         solved_sudoku.draw_cropped_result()
 
         result_img = solved_sudoku.draw_full_result(image)
+        cropped_result = solved_sudoku.draw_cropped_result()
+
+
         cv2.imshow('frame', result_img)
+        cv2.imshow('result', cropped_result)
 
         print(solved_sudoku)
 

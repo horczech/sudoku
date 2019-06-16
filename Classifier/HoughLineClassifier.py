@@ -33,6 +33,7 @@ class HoughLineClassifier:
     def classify_cells(self, cropped_sudoku_img, is_debugging_mode=False):
 
         binary_img = self.preprocess_image(cropped_sudoku_img, is_debugging_mode=is_debugging_mode)
+
         cells_coordinates = self.get_cells_coordinates(binary_img, is_debugging_mode=is_debugging_mode)
         digit_imgs, cell_idxs = self.get_digit_imgs(cropped_sudoku_img, cells_coordinates, is_debug_mode=False)
 
@@ -45,7 +46,7 @@ class HoughLineClassifier:
             from matplotlib import pyplot as plt
 
             # draw result
-            result_img = sudoku.draw_result(cropped_sudoku_img)
+            # result_img = sudoku.draw_result(cropped_sudoku_img)
 
             plt.figure('Digit classification')
 
@@ -57,7 +58,7 @@ class HoughLineClassifier:
             plt.imshow(binary_img, cmap='gray')
             plt.title('Binarized img')
 
-            cv2.imshow('RESULT', result_img)
+            # cv2.imshow('RESULT', result_img)
 
             plt.show()
 

@@ -5,9 +5,14 @@ import cv2
 class Sudoku:
     def __init__(self, cell_values):
         self.cell_values = np.asarray(cell_values, dtype=int)
+        self.is_solution_value = None
         self.cropped_cell_coordinates = None
         self.transformation_matrix = None
         self.cropped_sudoku_grid_img = None
+
+    def set_is_solution_value(self, input_sudoku):
+        self.is_solution_value = input_sudoku.cell_values == EMPTY_CELL_VALUE
+
 
     def set_transformation_matrix(self, transformation_matrix):
         self.transformation_matrix = transformation_matrix
@@ -85,18 +90,32 @@ class Sudoku:
 
         image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
 
+        # draw rectangles around cells
         for cell_value, cell_coordinate in zip(self.cell_values, self.cropped_cell_coordinates):
+            if cell_value != EMPTY_CELL_VALUE:
+                pt1 = (cell_coordinate[0], cell_coordinate[2])
+                pt2 = (cell_coordinate[1], cell_coordinate[3])
+
+                cv2.rectangle(image, pt1, pt2, (255, 0,0), 3)
+        # draw numbers
+        for cell_value, cell_coordinate, is_solution_value in zip(self.cell_values, self.cropped_cell_coordinates, self.is_solution_value):
             if cell_value != EMPTY_CELL_VALUE:
                 pt1 = (cell_coordinate[0], cell_coordinate[2])
                 pt2 = (cell_coordinate[1], cell_coordinate[3])
 
                 text_center = (pt1[0] + int((cell_coordinate[1]-cell_coordinate[0])/2), pt1[1] + int(cell_coordinate[3]-cell_coordinate[2]))
 
-                cv2.rectangle(image, pt1, pt2, (255, 0,0), 3)
-                cv2.putText(image, str(cell_value), text_center, cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,255), 3)
+                if is_solution_value:
+                    color = (0, 0, 255)
+                else:
+                    color = (255, 0, 0)
+
+                cv2.putText(image, str(cell_value), text_center, cv2.FONT_HERSHEY_SIMPLEX, 1, color, 3)
 
 
         return image
+
+
 
     def draw_full_result(self, image):
         if self.transformation_matrix is None:
