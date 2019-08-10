@@ -3,10 +3,10 @@ import yaml
 from SudokuConverter.SudokuConverter import sudoku_img_to_string
 from GridFinder.ContourGridFinder import ContourGridFinder
 from Classifier.HoughLineClassifier import HoughLineClassifier
-import subprocess
-from utilities.parse_output import parse_output
-from utilities.utils import timeit
 import argparse
+from Solvers.cpp_sat_solver import CppSatSolver as Solver
+from Solvers.python_sat_solver import PythonSatSolver as Solver
+from utilities.Sudoku import Sudoku
 
 
 def solve_sudoku(sudoku_img, grid_finder, digit_classificator):
@@ -15,11 +15,8 @@ def solve_sudoku(sudoku_img, grid_finder, digit_classificator):
 
     # print(digital_sudoku)
 
-    parsed_sudoku = input_sudoku.parse_sudoku()
-
-    solver_result = solver(parsed_sudoku)
-
-    solved_sudoku = parse_output(solver_result)
+    solver = Solver()
+    solved_sudoku = Sudoku(solver.solve(input_sudoku.cell_values))
 
     if solved_sudoku is None:
         print(">>> Sollution not found")
@@ -32,16 +29,11 @@ def solve_sudoku(sudoku_img, grid_finder, digit_classificator):
 
     return solved_sudoku, input_sudoku
 
-@timeit
-def solver(parsed_sudoku):
-    p = subprocess.Popen([r'./Solver/solver.sh', str(3), parsed_sudoku], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    solver_result, err = p.communicate()
 
-    return solver_result
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description='Sudoku Solver')
+    parser = argparse.ArgumentParser(description='Sudoku Solvers')
 
     parser.add_argument('img', type=str, help='Path to image')
     parser.add_argument('-c','--config', type=str, help='Path to config file')

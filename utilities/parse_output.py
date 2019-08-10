@@ -47,9 +47,7 @@ def parse_output(solver_result):
     flatten_sudoku[flatten_sudoku > 9] = EMPTY_CELL_VALUE
     flatten_sudoku[flatten_sudoku < 1] = EMPTY_CELL_VALUE
 
-    digital_sudoku = Sudoku(flatten_sudoku)
-
-    return digital_sudoku
+    return flatten_sudoku
 
 
 if __name__ == '__main__':
