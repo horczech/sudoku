@@ -4,7 +4,7 @@ from SudokuConverter.SudokuConverter import sudoku_img_to_string
 from GridFinder.ContourGridFinder import ContourGridFinder
 from Classifier.HoughLineClassifier import HoughLineClassifier
 import argparse
-from Solvers.cpp_sat_solver import CppSatSolver as Solver
+# from Solvers.cpp_sat_solver import CppSatSolver as Solver
 from Solvers.python_sat_solver import PythonSatSolver as Solver
 from utilities.Sudoku import Sudoku
 
